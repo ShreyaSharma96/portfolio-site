@@ -1,0 +1,469 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Hanken+Grotesk:wght@400;500;600&family=Tiro+Devanagari+Hindi&display=swap');
+
+.story {
+  --ink: #070a22;
+  --paper: #f6f4ee;
+  --gold: #ffc66b;
+  --bar: clamp(1.4rem, 5.5vh, 3.6rem);
+  --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --hindi: 'Tiro Devanagari Hindi', 'Noto Serif Devanagari', serif;
+  position: relative;
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  background: var(--ink);
+}
+
+/* ================= The set: sky, sun, land (fixed) ================= */
+.story .stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--top, #070a1e), var(--bottom, #161a42));
+}
+.story .stars {
+  position: absolute;
+  inset: 0;
+  opacity: var(--stars, 1);
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 40%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 44% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 61% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 16%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 90% 38%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 35% 62%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 55%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 5% 48%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 54% 50%, #fff 50%, transparent 51%);
+}
+/* The "camera" slowly pushes in and tilts up as the sun rises. */
+.story .cam {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  transform: scale(calc(1 + var(--p, 0) * .1));
+}
+.story .sun {
+  position: absolute;
+  left: var(--sx, 14%);
+  top: var(--sy, 92%);
+  width: clamp(2.6rem, 7vmin, 4.4rem);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fffbea, #ffe2a0 55%, #ffc070);
+  box-shadow: 0 0 18px 4px rgba(255, 214, 140, .7), 0 0 80px 26px rgba(255, 168, 86, .28);
+}
+.story .sun::before {
+  /* thin rotating light rays, fading out softly */
+  content: '';
+  position: absolute;
+  inset: -420%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 228, 170, .10) 0 2deg, transparent 2deg 9deg);
+  -webkit-mask-image: radial-gradient(circle, #000 4%, transparent 55%);
+  mask-image: radial-gradient(circle, #000 4%, transparent 55%);
+  animation: rays 200s linear infinite;
+  pointer-events: none;
+}
+.story .sun span {
+  position: absolute;
+  top: calc(100% + .9rem);
+  left: 50%;
+  translate: -50% 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: .12em;
+  color: rgba(255, 250, 235, .9);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .55);
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+}
+@keyframes rays { to { rotate: 360deg; } }
+
+/* A warm glow in the sky around the sun. Strongest at sunrise and sunset. */
+.story .stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 55% 45% at var(--sx, 14%) var(--sy, 92%), rgba(255, 176, 96, calc(.1 + (1 - var(--day, 0)) * .4)), transparent 70%);
+}
+
+/* Lens flare: small discs on a line from the sun to the middle of the screen. */
+.story .flare {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: calc(var(--day, 0) * .9);
+  translate: -50% -50%;
+}
+.story .f1 { left: calc(var(--sx) + (50% - var(--sx)) * .35); top: calc(var(--sy) + (50% - var(--sy)) * .35); width: 2.6rem; height: 2.6rem; background: radial-gradient(circle, rgba(255, 200, 120, .35), transparent 70%); }
+.story .f2 { left: calc(var(--sx) + (50% - var(--sx)) * .6); top: calc(var(--sy) + (50% - var(--sy)) * .6); width: 1.2rem; height: 1.2rem; background: radial-gradient(circle, rgba(140, 220, 255, .4), transparent 70%); }
+.story .f3 { left: calc(var(--sx) + (50% - var(--sx)) * 1.05); top: calc(var(--sy) + (50% - var(--sy)) * 1.05); width: 4rem; height: 4rem; background: radial-gradient(circle, rgba(255, 150, 200, .18), transparent 70%); }
+
+/* Clouds drift sideways as you scroll. */
+.story .cloud {
+  position: absolute;
+  height: 9vh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
+  filter: blur(6px);
+  opacity: calc(.15 + var(--day, 0) * .6);
+  pointer-events: none;
+}
+.story .c1 { top: 22%; left: 10%; width: 38vw; translate: calc(var(--p, 0) * -34vw) 0; }
+.story .c2 { top: 36%; left: 55%; width: 46vw; translate: calc(var(--p, 0) * -52vw) 0; }
+.story .c3 { top: 12%; left: 70%; width: 30vw; translate: calc(var(--p, 0) * -70vw) 0; }
+
+.story .birds {
+  position: absolute;
+  top: 24%;
+  left: 0;
+  width: clamp(8rem, 16vw, 14rem);
+  opacity: var(--day, 0);
+  translate: calc(var(--p, 0) * 140vw - 25vw) calc(var(--day, 0) * -4vh);
+}
+
+/* Land layers move at different speeds (parallax). */
+.story .land { position: absolute; left: 0; width: 100%; bottom: 0; display: block; }
+.story .land-back { height: 38vh; translate: 0 calc(var(--p, 0) * 5vh); }
+.story .land-mid { height: 30vh; translate: 0 calc(var(--p, 0) * 9vh); }
+.story .land-front { height: 18vh; translate: 0 calc(var(--p, 0) * 13vh); }
+.story .lights { opacity: var(--stars, 1); }
+
+/* Darkens the left side so the words are easy to read on the bright sky. */
+.story .scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(5, 8, 28, .62), rgba(5, 8, 28, .25) 55%, transparent 80%);
+}
+
+/* ================= Film treatment ================= */
+.story .vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, .5) 100%);
+}
+.story .grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 29;
+  pointer-events: none;
+  opacity: .1;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain .9s steps(6) infinite;
+}
+@keyframes grain {
+  0% { translate: 0 0; }
+  20% { translate: -4% 3%; }
+  40% { translate: 3% -5%; }
+  60% { translate: -6% -2%; }
+  80% { translate: 5% 4%; }
+  100% { translate: 0 0; }
+}
+.story .bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: var(--bar);
+  background: #000;
+  z-index: 30;
+  pointer-events: none;
+  animation: bars 2.2s cubic-bezier(.7, 0, .2, 1) both;
+}
+.story .bar-top { top: 0; }
+.story .bar-bottom { bottom: 0; }
+@keyframes bars { from { height: 50vh; } to { height: var(--bar); } }
+
+/* ================= Scenes ================= */
+.story .chapter { position: relative; z-index: 1; }
+.story.cine .chapter { height: calc(var(--len, 2.2) * 100vh); height: calc(var(--len, 2.2) * 100svh); }
+.story.cine .pin { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; }
+.story:not(.cine) .chapter { min-height: 100svh; display: flex; align-items: center; padding: 6rem 0; }
+.story:not(.cine) .pin { display: flex; width: 100%; }
+
+.story .pin-inner {
+  align-self: flex-end;
+  width: min(44rem, calc(100% - 2.5rem));
+  margin: 0 0 calc(var(--bar) + 5rem) clamp(1.25rem, 8vw, 7rem);
+}
+.story .pin-inner.wide { width: min(56rem, calc(100% - 2.5rem)); }
+.story:not(.cine) .pin-inner { align-self: center; margin-bottom: 0; }
+
+.story .beat { will-change: opacity, transform; }
+.story h2.beat {
+  margin: 0 0 .5rem;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(3rem, min(11vw, 15vh), 8.5rem);
+  line-height: .95;
+  letter-spacing: -.01em;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, .35);
+}
+.story .lead { margin: 0 0 1.4rem; font-size: 1.2rem; max-width: 34rem; text-shadow: 0 1px 14px rgba(0, 0, 0, .5); }
+.story .small { margin: 1.2rem 0 0; font-size: .95rem; opacity: .85; max-width: 40rem; }
+.story .plain { margin: 0 0 1.2rem; padding-left: 1.1rem; max-width: 34rem; }
+.story .plain li { margin-bottom: .35rem; }
+.story .feature { padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, .3); max-width: 34rem; }
+.story .feature h3 { margin: 0 0 .2rem; font-family: var(--display); font-weight: 500; font-size: 1.7rem; }
+.story .feature p { margin: 0; }
+
+/* Title card */
+.story .intro .pin { align-items: center; justify-content: center; text-align: center; }
+.story .intro-inner { width: min(62rem, calc(100% - 2.5rem)); }
+.story .intro h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(3.2rem, 14vw, 11.5rem);
+  line-height: .95;
+  text-shadow: 0 4px 50px rgba(0, 0, 0, .45);
+  animation: title 3.2s cubic-bezier(.2, .6, .2, 1) .5s both;
+}
+.story .name-hi {
+  margin: .4rem 0 1.4rem;
+  font-family: var(--hindi);
+  font-size: clamp(1.5rem, 4.6vw, 2.8rem);
+  line-height: 1.2;
+  color: rgba(255, 255, 255, .55);
+  animation: fade 2s ease 1.6s both;
+}
+.story .intro-sub { margin: 0 auto 1.6rem; max-width: 34rem; font-size: 1.15rem; animation: fade 2s ease 2.2s both; }
+.story .intro-actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; align-items: center; animation: fade 2s ease 2.6s both; }
+@keyframes title {
+  from { opacity: 0; letter-spacing: .22em; filter: blur(14px); }
+  to { opacity: 1; letter-spacing: -.005em; filter: blur(0); }
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Timeline */
+.story .path { list-style: none; margin: 0; padding: 0; max-width: 34rem; }
+.story .path li { position: relative; padding: 0 0 1.1rem 1.3rem; border-left: 1px solid rgba(255, 255, 255, .4); }
+.story .path li:last-child { padding-bottom: 0; }
+.story .path li::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: .6rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.story .path time { display: block; font-family: var(--display); font-weight: 600; font-size: 1.5rem; line-height: 1.1; color: var(--gold); }
+.story .path b { display: block; font-weight: 600; }
+.story .path span { display: block; font-size: .95rem; opacity: .85; }
+
+/* Internship: portrait in an arch on the right */
+.story .portrait-scene .pin-inner {
+  width: min(58rem, calc(100% - 2.5rem));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
+  gap: 2.5rem;
+  align-items: end;
+}
+.story .portrait-scene .scene-text { grid-column: 1; grid-row: 1; }
+.story .portrait-scene .story-frame { grid-column: 2; grid-row: 1; }
+.story .story-frame {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  background: rgba(255, 255, 255, .08);
+  box-shadow: 0 0 80px rgba(255, 170, 90, .25);
+}
+.story .story-frame .story-portrait,
+.story .story-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Skills: big words, one by one */
+.story .words { list-style: none; margin: 0 0 1.2rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0 1.6rem; }
+.story .words li {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(2.2rem, min(7vw, 9vh), 4.6rem);
+  line-height: 1.1;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, .35);
+}
+.story .strength-line { margin: 0; font-weight: 500; }
+
+/* Contact */
+.story .mail {
+  display: inline-block;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 5.2vw, 2.8rem);
+  color: var(--paper);
+  overflow-wrap: anywhere;
+  text-decoration-thickness: 2px;
+  text-underline-offset: .2em;
+  text-decoration-color: var(--gold);
+}
+.story .phone { margin: .4rem 0 .6rem; }
+.story .phone a { color: var(--paper); }
+.story .finale-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.2rem; }
+
+/* ================= Buttons ================= */
+.story .btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.3rem;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font: 600 1rem/1 var(--sans);
+  cursor: pointer;
+}
+.story .btn.light { background: var(--paper); color: var(--ink); }
+.story .btn.solid { background: var(--gold); color: var(--ink); }
+.story .btn.ghost-light { background: transparent; color: var(--paper); border-color: rgba(255, 255, 255, .6); }
+.story .btn:focus-visible,
+.story .rail button:focus-visible,
+.story .mail:focus-visible,
+.story .phone a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* Play button: above the mode switch on larger screens, a round icon beside it on phones. */
+.story .btn.play-btn {
+  position: fixed;
+  left: 50%;
+  bottom: calc(5.2rem + env(safe-area-inset-bottom, 0px));
+  translate: -50% 0;
+  z-index: 45;
+  gap: .55rem;
+  white-space: nowrap;
+  color: var(--paper);
+  background: rgba(9, 12, 36, .7);
+  border-color: rgba(255, 255, 255, .4);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.story .btn.play-btn.solid { background: var(--gold); color: var(--ink); border-color: transparent; }
+@media (max-width: 600px) {
+  .story .btn.play-btn {
+    left: auto;
+    right: .6rem;
+    translate: none;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    width: 54px;
+    height: 54px;
+    min-height: 54px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .story .play-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (max-width: 400px) { .story .switch button { padding: 0 .9rem; } }
+
+/* ================= Chapter rail ================= */
+.story .rail {
+  position: fixed;
+  right: 1rem;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .3rem;
+}
+.story .rail button {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 28px;
+  padding: 0 .2rem;
+  border: 0;
+  background: none;
+  color: var(--paper);
+  font: 500 .85rem/1 var(--sans);
+  cursor: pointer;
+}
+.story .rail button::after { content: ''; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--paper); }
+.story .rail button.on::after { background: var(--gold); border-color: var(--gold); }
+.story .rail span { opacity: 0; transition: opacity .2s; text-shadow: 0 1px 8px rgba(0, 0, 0, .7); }
+.story .rail button:hover span,
+.story .rail button:focus-visible span,
+.story .rail button.on span { opacity: 1; }
+
+@media (max-height: 820px) and (min-width: 701px) {
+  .story .lead { font-size: 1.05rem; margin-bottom: 1rem; }
+  .story .small { font-size: .88rem; margin-top: .8rem; }
+  .story .path li { padding-bottom: .8rem; }
+  .story .path time { font-size: 1.3rem; }
+  .story .plain { margin-bottom: .8rem; }
+}
+
+/* ================= Small screens ================= */
+@media (max-width: 700px) {
+  .story { --bar: 1.6rem; font-size: 1rem; line-height: 1.5; }
+
+  /* Shorter chapters, so there is less empty scrolling. */
+  .story.cine .chapter { height: calc(var(--len, 2.2) * 80svh); }
+
+  /* Content sits in the middle of the screen, between the bars and the controls. */
+  .story .pin-inner,
+  .story .pin-inner.wide,
+  .story .portrait-scene .pin-inner {
+    width: calc(100% - 3.6rem);
+    margin: 0 0 calc(var(--bar) + 4.2rem) 1.1rem;
+    padding: 0;
+    align-self: flex-end;
+  }
+
+  .story h2.beat { font-size: clamp(2.6rem, 14vw, 3.6rem); margin-bottom: .35rem; }
+  .story .lead { font-size: 1rem; margin-bottom: .9rem; }
+  .story .small { font-size: .85rem; margin-top: .8rem; }
+
+  .story .path li { padding: 0 0 .75rem 1rem; }
+  .story .path li:last-child { padding-bottom: 0; }
+  .story .path li::before { top: .5rem; }
+  .story .path time { font-size: 1.25rem; }
+  .story .path span { font-size: .88rem; }
+
+  .story .plain { margin-bottom: .8rem; padding-left: 1rem; font-size: .95rem; }
+  .story .plain li { margin-bottom: .25rem; }
+  .story .feature { padding-top: .7rem; }
+  .story .feature h3 { font-size: 1.4rem; }
+  .story .feature p { font-size: .92rem; }
+
+  .story .words { gap: 0 1rem; margin-bottom: .8rem; }
+  .story .words li { font-size: clamp(1.7rem, 8vw, 2.3rem); }
+
+  .story .mail { font-size: clamp(1.15rem, 6vw, 1.6rem); }
+  .story .finale-actions { margin-top: .9rem; }
+
+  .story .intro .pin { padding-right: 2.2rem; }
+  .story .pin-inner.wide { width: calc(100% - 3.6rem); }
+  .story .intro-inner { width: 100%; padding: 0 1.1rem; }
+  .story .intro h1 { font-size: clamp(3rem, 17vw, 4.6rem); }
+  .story .name-hi { margin: .3rem 0 1rem; }
+  .story .intro-sub { font-size: 1rem; margin-bottom: 1.2rem; }
+
+  .story .portrait-scene .pin-inner { grid-template-columns: 1fr; gap: .9rem; }
+  .story .portrait-scene .story-frame { grid-column: 1; grid-row: 1; width: 7rem; }
+  .story .portrait-scene .scene-text { grid-row: 2; }
+
+  .story .rail span { display: none; }
+  .story .scrim { background: linear-gradient(to top, rgba(5, 8, 28, .7), rgba(5, 8, 28, .25) 60%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story .grain,
+  .story .sun::before,
+  .story .bar,
+  .story .intro h1,
+  .story .name-hi,
+  .story .intro-sub,
+  .story .intro-actions { animation: none; }
+  .story .rail span { transition: none; }
+}

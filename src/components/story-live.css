@@ -1,0 +1,164 @@
+/* Extra "live" layers for the Story page.
+   This file only adds new classes (lv-...). It does not change your own story CSS. */
+@import url('https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&display=swap');
+
+.story .lv { position: absolute; pointer-events: none; }
+
+/* ---- The sun breathes: a soft glow that is strongest at sunrise and sunset ---- */
+.story .lv-glow {
+  left: var(--sx, 14%);
+  top: var(--sy, 94%);
+  width: 60vmin;
+  height: 60vmin;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 190, 110, .4), rgba(255, 150, 80, .12) 42%, transparent 68%);
+  mix-blend-mode: screen;
+  opacity: calc(.3 + (1 - var(--day, 0)) * .45);
+  animation: lv-breathe 7s ease-in-out infinite;
+}
+@keyframes lv-breathe { 50% { scale: 1.1; } }
+
+/* ---- Night: twinkling stars and a shooting star now and then ---- */
+.story .lv-twinkle {
+  inset: 0;
+  opacity: var(--stars, 1);
+  translate: calc(var(--mx, 0) * -6px) calc(var(--my, 0) * -4px);
+}
+.story .lv-twinkle i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #fff;
+  animation: lv-twinkle 3.4s ease-in-out var(--d) infinite;
+}
+@keyframes lv-twinkle { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+
+.story .lv-shoot-wrap { inset: 0; overflow: hidden; opacity: var(--stars, 1); }
+.story .lv-shoot {
+  position: absolute;
+  top: 12%;
+  left: 74%;
+  width: 7rem;
+  height: 2px;
+  rotate: -24deg;
+  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0));
+  opacity: 0;
+  animation: lv-shoot 13s linear 4s infinite;
+}
+@keyframes lv-shoot {
+  0% { transform: translate(0, 0); opacity: 0; }
+  1% { opacity: 1; }
+  6% { transform: translate(-38vw, 16vh); opacity: 0; }
+  100% { transform: translate(-38vw, 16vh); opacity: 0; }
+}
+
+/* ---- Day: clouds drift, birds fly, a kite sways ---- */
+.story .lv-cloud {
+  left: 0;
+  height: 9vh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
+  filter: blur(6px);
+  opacity: calc(.08 + var(--day, 0) * .55);
+  translate: calc(var(--p, 0) * -12vw + var(--mx, 0) * 10px) 0;
+  animation: lv-drift 110s linear infinite;
+}
+.story .lv-c1 { top: 20%; width: 38vw; }
+.story .lv-c2 { top: 34%; width: 46vw; animation-duration: 150s; animation-delay: -60s; }
+.story .lv-c3 { top: 11%; width: 30vw; animation-duration: 190s; animation-delay: -120s; }
+@keyframes lv-drift { from { transform: translateX(-45vw); } to { transform: translateX(105vw); } }
+
+.story .lv-flock {
+  left: 0;
+  width: clamp(7rem, 14vw, 12rem);
+  color: #10163c;
+  opacity: calc(var(--day, 0) * 1.3);
+  animation: lv-fly 42s linear infinite;
+}
+.story .lv-fl1 { top: 22%; }
+.story .lv-fl2 { top: 35%; width: clamp(5rem, 9vw, 8rem); animation-duration: 60s; animation-delay: -24s; }
+@keyframes lv-fly {
+  from { transform: translate(-25vw, 0); }
+  50% { transform: translate(45vw, -3vh); }
+  to { transform: translate(115vw, 0); }
+}
+.story .lv-flock path {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: lv-flap .75s ease-in-out infinite alternate;
+}
+.story .lv-flock path:nth-child(2) { animation-delay: -.2s; }
+.story .lv-flock path:nth-child(3) { animation-delay: -.4s; }
+.story .lv-flock path:nth-child(4) { animation-delay: -.1s; }
+@keyframes lv-flap { to { transform: scaleY(.4); } }
+
+/* A kite, for Uttarayan in Ahmedabad. It hangs from its string and sways in the wind. */
+.story .lv-kite {
+  left: 78%;
+  top: 14%;
+  width: clamp(2.4rem, 4vw, 3.4rem);
+  opacity: calc(var(--day, 0) * 1.4);
+  translate: calc(var(--p, 0) * -8vw + var(--mx, 0) * -12px) calc(var(--day, 0) * -3vh);
+  transform-origin: 50% 100%;
+  animation: lv-sway 6s ease-in-out infinite;
+}
+@keyframes lv-sway {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+
+/* ---- Evening: small lights float up from the land ---- */
+.story .lv-motes { inset: 0; opacity: var(--dusk, 0); }
+.story .lv-motes i {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--b);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffd98a;
+  box-shadow: 0 0 10px 3px rgba(255, 210, 120, .6);
+  opacity: 0;
+  animation: lv-float var(--t) ease-in-out var(--d) infinite;
+}
+@keyframes lv-float {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(14px, -8vh); }
+  80% { opacity: 1; }
+  100% { transform: translate(-10px, -16vh); opacity: 0; }
+}
+
+/* ---- Time of day, bottom left ---- */
+.story .lv-clock {
+  position: fixed;
+  left: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 44;
+  pointer-events: none;
+  font: 500 .85rem/1 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  letter-spacing: .08em;
+  color: rgba(255, 255, 255, .75);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .5);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Name in Hindi under the English name ---- */
+.story .lv-hindi {
+  margin: .4rem 0 1rem;
+  font-family: 'Tiro Devanagari Hindi', 'Noto Serif Devanagari', serif;
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  line-height: 1.2;
+  color: rgba(255, 255, 255, .55);
+  text-align: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story .lv,
+  .story .lv *,
+  .story .lv-flock path { animation: none !important; }
+}
